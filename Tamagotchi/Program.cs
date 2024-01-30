@@ -1,19 +1,17 @@
 ﻿using RestSharp;
 using System.Text.Json;
+using Tamagotchi.Models;
 
 var id = 0;
 
 while (id == 0)
 {
-    Console.WriteLine("Escolha um Pokémon:");
-    Console.WriteLine("1. Bulbasaur");
-    Console.WriteLine("2. Charmander");
-    Console.WriteLine("3. Squirtle");
-    Console.WriteLine("4. Pikachu");
+    DisplayChoosePokemonMenu();
 
-    var option = Console.ReadLine();
+    var choice = Console.ReadLine();
+    Console.WriteLine();
 
-    switch (option)
+    switch (choice)
     {
         case "1":
             id = 1;
@@ -28,23 +26,81 @@ while (id == 0)
             id = 25;
             break;
         default:
-            Console.WriteLine("Escolha inválida.");
+            DisplayErrorMessage();
             break;
     }
-}
 
-var client = new RestClient("https://pokeapi.co/api/v2/");
-var request = new RestRequest($"pokemon/{id}");
-var response = await client.ExecuteAsync(request);
+    if (id == 0)
+        continue;
 
-if (response.Content is not null)
-{
-    using var jsonDocument = JsonDocument.Parse(response.Content);
-    foreach (var property in jsonDocument.RootElement.EnumerateObject())
+    var pokemon = await GetPokemon(id);
+
+    if (pokemon is null)
     {
-        Console.WriteLine($"{property}");
+        DisplayErrorMessage("Erro ao obter Pokémon");
+        id = 0;
+        continue;
+    }
+
+    Console.WriteLine(pokemon);
+
+    var confirmation = "";
+
+    while (confirmation != "s" && confirmation != "n")
+    {
+        Console.Write("Escolher outro Pokémon? [S/N] ");
+
+        confirmation = Console.ReadLine()?.ToLower();
+        Console.WriteLine();
+
+        switch (confirmation)
+        {
+            case "s":
+                id = 0;
+                break;
+            case "n":
+                DisplayEndOfProgram();
+                return;
+            default:
+                DisplayErrorMessage();
+                break;
+        }
     }
 }
 
-Console.WriteLine("Pressione qualquer tecla para continuar.");
-Console.ReadKey();
+static void DisplayChoosePokemonMenu()
+{
+    Console.WriteLine("1. Bulbasaur");
+    Console.WriteLine("2. Charmander");
+    Console.WriteLine("3. Squirtle");
+    Console.WriteLine("4. Pikachu");
+    Console.WriteLine();
+    Console.Write("Escolha um Pokémon: ");
+}
+
+static void DisplayErrorMessage(string message = "Escolha inválida")
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine(message);
+    Console.WriteLine();
+    Console.ResetColor();
+}
+
+static async Task<Pokemon?> GetPokemon(int id)
+{
+    var client = new RestClient("https://pokeapi.co/api/v2/");
+    var request = new RestRequest($"pokemon/{id}");
+    var response = await client.ExecuteAsync(request);
+
+    if (response.Content is null)
+        return null;
+
+    return JsonSerializer.Deserialize<Pokemon>(
+            response.Content, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+}
+
+static void DisplayEndOfProgram()
+{
+    Console.WriteLine("Pressione qualquer tecla para continuar.");
+    Console.ReadKey();
+}
