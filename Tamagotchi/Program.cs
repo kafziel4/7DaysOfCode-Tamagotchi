@@ -1,106 +1,69 @@
-﻿using RestSharp;
-using System.Text.Json;
-using Tamagotchi.Models;
+﻿using Tamagotchi.Services;
+using Tamagotchi.Views;
 
-var id = 0;
+MainView.DisplayHeader();
 
-while (id == 0)
+while (string.IsNullOrEmpty(MainView.Username))
 {
-    DisplayChoosePokemonMenu();
+    MainView.GetUsername();
+}
 
-    var choice = Console.ReadLine();
+while (true)
+{
+    Console.WriteLine();
+    var mainMenuOption = MainView.GetMainMenuOption();
     Console.WriteLine();
 
-    switch (choice)
+    switch (mainMenuOption)
     {
         case "1":
-            id = 1;
+            await AdoptionMenuAsync();
             break;
         case "2":
-            id = 4;
+            MainView.DisplayAdoptedPokemon();
             break;
         case "3":
-            id = 7;
-            break;
-        case "4":
-            id = 25;
-            break;
-        default:
-            DisplayErrorMessage();
-            break;
+            MainView.DisplayEndOfProgram();
+            return;
     }
+}
 
-    if (id == 0)
-        continue;
-
-    var pokemon = await GetPokemon(id);
-
-    if (pokemon is null)
+static async Task AdoptionMenuAsync()
+{
+    while (true)
     {
-        DisplayErrorMessage("Erro ao obter Pokémon");
-        id = 0;
-        continue;
-    }
-
-    Console.WriteLine(pokemon);
-
-    var confirmation = "";
-
-    while (confirmation != "s" && confirmation != "n")
-    {
-        Console.Write("Escolher outro Pokémon? [S/N] ");
-
-        confirmation = Console.ReadLine()?.ToLower();
+        var adoptionMenuOption = MainView.GetAdoptionMenuOption();
         Console.WriteLine();
 
-        switch (confirmation)
+        if (adoptionMenuOption > 0 && adoptionMenuOption <= MainView.PokemonOptions.Count)
         {
-            case "s":
-                id = 0;
-                break;
-            case "n":
-                DisplayEndOfProgram();
-                return;
-            default:
-                DisplayErrorMessage();
-                break;
+            var id = MainView.PokemonOptions[adoptionMenuOption - 1].Id;
+            await ChoosePokemonMenuAsync(id);
+            return;
         }
     }
 }
 
-static void DisplayChoosePokemonMenu()
+static async Task ChoosePokemonMenuAsync(int id)
 {
-    Console.WriteLine("1. Bulbasaur");
-    Console.WriteLine("2. Charmander");
-    Console.WriteLine("3. Squirtle");
-    Console.WriteLine("4. Pikachu");
-    Console.WriteLine();
-    Console.Write("Escolha um Pokémon: ");
+    while (true)
+    {
+        var choosePokemonMenuOption = MainView.GetChoosePokemonMenuOption(id);
+        Console.WriteLine();
+
+        switch (choosePokemonMenuOption)
+        {
+            case "1":
+                var pokemon = await PokeApiSerivce.GetPokemon(id);
+                Console.WriteLine(pokemon);
+                break;
+            case "2":
+                MainView.AdoptPokemon(id);
+                return;
+            case "3":
+                await AdoptionMenuAsync();
+                return;
+        }
+    }
 }
 
-static void DisplayErrorMessage(string message = "Escolha inválida")
-{
-    Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine(message);
-    Console.WriteLine();
-    Console.ResetColor();
-}
-
-static async Task<Pokemon?> GetPokemon(int id)
-{
-    var client = new RestClient("https://pokeapi.co/api/v2/");
-    var request = new RestRequest($"pokemon/{id}");
-    var response = await client.ExecuteAsync(request);
-
-    if (response.Content is null)
-        return null;
-
-    return JsonSerializer.Deserialize<Pokemon>(
-            response.Content, new JsonSerializerOptions(JsonSerializerDefaults.Web));
-}
-
-static void DisplayEndOfProgram()
-{
-    Console.WriteLine("Pressione qualquer tecla para continuar.");
-    Console.ReadKey();
-}

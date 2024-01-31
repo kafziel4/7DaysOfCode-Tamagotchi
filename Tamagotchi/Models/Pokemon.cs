@@ -14,21 +14,15 @@ public class Pokemon
     {
         var stringBuilder = new StringBuilder();
 
-        stringBuilder.AppendLine($"Nome: {Name}");
-        stringBuilder.AppendLine($"Altura: {Height}");
-        stringBuilder.AppendLine($"Peso: {Weight}");
+        stringBuilder.AppendLine($"NOME: {Name.ToUpper()}");
+        stringBuilder.AppendLine($"ALTURA: {Height}");
+        stringBuilder.AppendLine($"PESO: {Weight}");
 
-        stringBuilder.AppendLine("Tipo:");
-        foreach (var pokemonType in Types)
-        {
-            stringBuilder.AppendLine($"  {pokemonType.Type.Name}");
-        }
+        stringBuilder.AppendLine("TIPO:");
+        stringBuilder.AppendLine($"  {string.Join(", ", Types.Select(t => t.Type.Name.ToUpper()))}");
 
-        stringBuilder.AppendLine("Habilidades:");
-        foreach (var pokemonAbility in Abilities)
-        {
-            stringBuilder.AppendLine($"  {pokemonAbility.Ability.Name}");
-        }
+        stringBuilder.AppendLine("HABILIDADES:");
+        stringBuilder.AppendLine($"  {string.Join(", ", Abilities.Select(a => a.Ability.Name.ToUpper()))}");
 
         return stringBuilder.ToString();
     }
