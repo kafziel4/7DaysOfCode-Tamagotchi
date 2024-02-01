@@ -1,6 +1,6 @@
-﻿namespace Tamagotchi.Views;
+﻿namespace Tamagotchi.Entites;
 
-public class PokemonOption
+public class PokemonMascot
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;

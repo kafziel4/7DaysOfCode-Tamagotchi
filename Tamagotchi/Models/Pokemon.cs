@@ -5,8 +5,8 @@ namespace Tamagotchi.Models;
 public class Pokemon
 {
     public string Name { get; set; } = string.Empty;
-    public int Height { get; set; }
-    public int Weight { get; set; }
+    public double Height { get; set; }
+    public double Weight { get; set; }
     public List<PokemonType> Types { get; set; } = [];
     public List<PokemonAbility> Abilities { get; set; } = [];
 
@@ -15,14 +15,14 @@ public class Pokemon
         var stringBuilder = new StringBuilder();
 
         stringBuilder.AppendLine($"NOME: {Name.ToUpper()}");
-        stringBuilder.AppendLine($"ALTURA: {Height}");
-        stringBuilder.AppendLine($"PESO: {Weight}");
+        stringBuilder.AppendLine($"ALTURA: {Height / 10:N1} M");
+        stringBuilder.AppendLine($"PESO: {Weight / 10:N1} KG");
 
         stringBuilder.AppendLine("TIPO:");
         stringBuilder.AppendLine($"  {string.Join(", ", Types.Select(t => t.Type.Name.ToUpper()))}");
 
         stringBuilder.AppendLine("HABILIDADES:");
-        stringBuilder.AppendLine($"  {string.Join(", ", Abilities.Select(a => a.Ability.Name.ToUpper()))}");
+        stringBuilder.Append($"  {string.Join(", ", Abilities.Select(a => a.Ability.Name.ToUpper()))}");
 
         return stringBuilder.ToString();
     }
