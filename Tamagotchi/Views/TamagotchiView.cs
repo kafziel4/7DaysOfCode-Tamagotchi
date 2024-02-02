@@ -37,7 +37,7 @@ public static class TamagotchiView
         Console.WriteLine(PadCenter(" MENU PRINCIPAL "));
         Console.WriteLine($"{user.Username}, VOCÊ QUER:");
         Console.WriteLine("1 - ADOTAR UM POKÉMON");
-        Console.WriteLine("2 - VER SEUS POKÉMON");
+        Console.WriteLine("2 - VER SEUS MASCOTES");
         Console.WriteLine("3 - SAIR");
     }
 
@@ -100,14 +100,89 @@ public static class TamagotchiView
         Console.WriteLine(egg);
     }
 
-    public static void DisplayAdoptedPokemon(User user, List<string> adoptedPokemon)
+    public static void DisplayNoAdoptedMascotMessage(User user)
     {
         Console.WriteLine();
+        Console.WriteLine($"{user.Username}, VOCÊ AINDA NÃO TEM NENHUM POKÉMON!");
+    }
 
-        if (adoptedPokemon.Count == 0)
-            Console.WriteLine($"{user.Username}, VOCÊ AINDA NÃO TEM NENHUM POKÉMON!");
-        else
-            Console.WriteLine(string.Join(", ", adoptedPokemon));
+    public static void DisplayAdoptedMascotMenu(List<Mascot> mascots)
+    {
+        Console.WriteLine();
+        Console.WriteLine(PadCenter(" ESCOLHER MASCOTE "));
+
+        for (int i = 0; i < mascots.Count; i++)
+        {
+            Console.WriteLine($"{i + 1} - {mascots[i].Name}");
+        }
+    }
+
+    public static void DisplayHatchMessage(User user, Mascot mascot)
+    {
+        Console.WriteLine();
+        Console.WriteLine($"{user.Username}, {mascot.Name} SAIU DO OVO!");
+        var hatchedEgg =
+@"
+          ████████          
+        ██        ██        
+      ██            ██      
+    ██                ██    
+    ██                ██    
+  ██                    ██  
+  ██      ██      ██    ██  
+    ██  ██  ██  ██  ██  ██  
+      ██      ██      ██    
+  ██      ██      ██        
+██  ██  ██  ██  ██  ██  ████
+██    ██      ██      ██  ██
+██                        ██
+██                        ██
+  ██                    ██  
+  ██                    ██  
+    ██                ██    
+      ████        ████      
+          ████████          
+";
+        Console.WriteLine(hatchedEgg);
+    }
+
+    public static void DisplayInteractionMenu(User user, Mascot mascot)
+    {
+        Console.WriteLine();
+        Console.WriteLine(PadCenter(" INTERAGIR COM MASCOTE "));
+        Console.WriteLine($"{user.Username}, VOCÊ QUER:");
+        Console.WriteLine($"1 - SABER COMO O {mascot.Name} ESTÁ");
+        Console.WriteLine($"2 - ALIMENTAR O {mascot.Name}");
+        Console.WriteLine($"3 - BRINCAR COM O {mascot.Name}");
+        Console.WriteLine($"4 - COLOCAR O {mascot.Name} PARA DORMIR");
+        Console.WriteLine("5 - VOLTAR");
+    }
+
+    public static void DisplayMascotStatus(Mascot mascot)
+    {
+        Console.WriteLine();
+        Console.WriteLine(mascot);
+    }
+
+    public static void DisplayFeedMessage(Mascot mascot)
+    {
+        Console.WriteLine();
+        Console.WriteLine("\\(^O^)/");
+        Console.WriteLine($"{mascot.Name} COMEU!");
+    }
+
+    public static void DisplayPlayMessage(Mascot mascot)
+    {
+        Console.WriteLine();
+        Console.WriteLine("\\(^-^)/");
+        Console.WriteLine($"{mascot.Name} BRINCOU!");
+    }
+
+    public static void DisplaySleepMessage(Mascot mascot)
+    {
+        Console.WriteLine();
+        Console.WriteLine("<(^_^)>");
+        Console.WriteLine($"{mascot.Name} DORMIU!");
     }
 
     public static void DisplayEndOfProgram(User user)
