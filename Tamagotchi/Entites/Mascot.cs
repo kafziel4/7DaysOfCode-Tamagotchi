@@ -11,6 +11,10 @@ public class Mascot
     private static readonly Random _random = new();
 
     public string Name { get; private set; }
+    public double Height { get; private set; }
+    public double Weight { get; private set; }
+    public List<string> Types { get; private set; } = [];
+    public List<string> Abilities { get; private set; } = [];
     public bool Hatched { get; private set; }
     public int Satiety { get; private set; }
     public int Energy { get; private set; }
@@ -50,6 +54,16 @@ public class Mascot
     public override string ToString()
     {
         var stringBuilder = new StringBuilder();
+
+        stringBuilder.AppendLine($"NOME: {Name}");
+        stringBuilder.AppendLine($"ALTURA: {Height / 10:N1} M");
+        stringBuilder.AppendLine($"PESO: {Weight / 10:N1} KG");
+
+        stringBuilder.AppendLine("TIPO:");
+        stringBuilder.AppendLine($"  {string.Join(", ", Types)}");
+
+        stringBuilder.AppendLine("HABILIDADES:");
+        stringBuilder.AppendLine($"  {string.Join(", ", Abilities)}");
 
         stringBuilder.AppendLine($"{Name} ESTÁ {(Satiety < AttributeThreshold ? "COM FOME" : "ALIMENTADO")}!");
         stringBuilder.AppendLine($"{Name} ESTÁ {(Mood < AttributeThreshold ? "TRISTE" : "FELIZ")}!");

@@ -9,10 +9,17 @@ public class PokemonSerivce
 
     public async Task<Pokemon?> GetPokemon(int id)
     {
-        using var client = new RestClient(_restClientOptions);
-        var request = new RestRequest($"pokemon/{id}");
-        var response = await client.ExecuteAsync<Pokemon>(request);
+        try
+        {
+            using var client = new RestClient(_restClientOptions);
+            var request = new RestRequest($"pokemon/{id}");
+            var response = await client.ExecuteAsync<Pokemon>(request);
 
-        return response.Data;
+            return response.Data;
+        }
+        catch
+        {
+            return null;
+        }
     }
 }

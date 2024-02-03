@@ -2,5 +2,16 @@
 
 public class User
 {
-    public string Username { get; set; } = string.Empty;
+    private string _name = string.Empty;
+
+    public string Name
+    {
+        get => _name;
+        set => _name = value.ToUpper();
+    }
+
+    public override string ToString()
+    {
+        return Name;
+    }
 }

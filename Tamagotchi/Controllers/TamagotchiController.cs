@@ -1,4 +1,5 @@
-﻿using Tamagotchi.Entites;
+﻿using AutoMapper;
+using Tamagotchi.Entites;
 using Tamagotchi.Services;
 using Tamagotchi.Views;
 
@@ -7,35 +8,33 @@ namespace Tamagotchi.Controllers;
 public class TamagotchiController
 {
     private readonly PokemonSerivce _pokemonSerivce;
-
-    private readonly List<PokemonMascot> _pokemonMascots =
-        [
-            new PokemonMascot { Id = 1, Name = "BULBASAUR" },
-            new PokemonMascot { Id = 4, Name = "CHARMANDER" },
-            new PokemonMascot { Id = 7, Name = "SQUIRTLE" },
-            new PokemonMascot { Id = 25, Name = "PIKACHU" },
-        ];
-
+    private readonly IMapper _mapper;
+    private readonly List<MascotOption> _mascotOptions;
     private readonly User _user = new();
     private readonly List<Mascot> _mascots = [];
 
-    public TamagotchiController(PokemonSerivce pokemonSerivce)
+    public TamagotchiController(
+        PokemonSerivce pokemonSerivce,
+        IMapper mapper,
+        IEnumerable<MascotOption> mascotOptions)
     {
         _pokemonSerivce = pokemonSerivce;
+        _mapper = mapper;
+        _mascotOptions = mascotOptions.ToList();
     }
 
     public void Start()
     {
         TamagotchiView.DisplayHeader();
 
-        var username = "";
+        var username = string.Empty;
         while (string.IsNullOrWhiteSpace(username))
         {
             TamagotchiView.DisplayUsernameQuestion();
             username = Console.ReadLine();
         }
 
-        _user.Username = username.ToUpper();
+        _user.Name = username;
         TamagotchiView.DisplayWelcomeMessage(_user);
     }
 
@@ -70,17 +69,17 @@ public class TamagotchiController
 
     private async Task ChoosePokemon()
     {
-        var isPokemonAdopted = false;
-        while (!isPokemonAdopted)
+        bool? isPokemonAdopted = false;
+        while (isPokemonAdopted.HasValue && !isPokemonAdopted.Value)
         {
-            TamagotchiView.DisplayChoosePokemonMenu(_user, _pokemonMascots);
+            TamagotchiView.DisplayChoosePokemonMenu(_user, _mascotOptions);
             var option = Console.ReadLine();
 
             if (int.TryParse(option, out var parsedOption) &&
                 parsedOption > 0 &&
-                parsedOption <= _pokemonMascots.Count)
+                parsedOption <= _mascotOptions.Count)
             {
-                var pokemonChoice = _pokemonMascots[parsedOption - 1];
+                var pokemonChoice = _mascotOptions[parsedOption - 1];
                 isPokemonAdopted = await AdoptPokemon(pokemonChoice);
             }
             else
@@ -90,8 +89,15 @@ public class TamagotchiController
         }
     }
 
-    private async Task<bool> AdoptPokemon(PokemonMascot pokemonChoice)
+    private async Task<bool?> AdoptPokemon(MascotOption pokemonChoice)
     {
+        var pokemon = await _pokemonSerivce.GetPokemon(pokemonChoice.Id);
+        if (pokemon == null)
+        {
+            TamagotchiView.DisplayGetPokemonErrorMessage();
+            return null;
+        }
+
         while (true)
         {
             TamagotchiView.DisplayAdoptionMenu(_user, pokemonChoice);
@@ -100,11 +106,11 @@ public class TamagotchiController
             switch (option)
             {
                 case "1":
-                    var pokemon = await _pokemonSerivce.GetPokemon(pokemonChoice.Id);
                     TamagotchiView.DisplayPokemon(pokemon);
                     break;
                 case "2":
-                    _mascots.Add(new Mascot(pokemonChoice.Name));
+                    var mascot = _mapper.Map<Mascot>(pokemon);
+                    _mascots.Add(mascot);
                     TamagotchiView.DisplayAdoptionMessage(_user, pokemonChoice);
                     return true;
                 case "3":
