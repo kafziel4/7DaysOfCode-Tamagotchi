@@ -23,9 +23,9 @@ public class Mascot
     public Mascot(string name)
     {
         Name = name.ToUpper();
-        Satiety = _random.Next(MinAttributeValue, MaxAttributeValue + 1);
-        Energy = _random.Next(MinAttributeValue, MaxAttributeValue + 1);
-        Mood = _random.Next(MinAttributeValue, MaxAttributeValue + 1);
+        Satiety = _random.Next(MinAttributeValue, AttributeThreshold);
+        Energy = _random.Next(MinAttributeValue, AttributeThreshold);
+        Mood = _random.Next(MinAttributeValue, AttributeThreshold);
     }
 
     public void Hatch()

@@ -74,13 +74,16 @@ public class TamagotchiController
         {
             TamagotchiView.DisplayChoosePokemonMenu(_user, _mascotOptions);
             var option = Console.ReadLine();
+            int.TryParse(option, out var parsedOption);
 
-            if (int.TryParse(option, out var parsedOption) &&
-                parsedOption > 0 &&
-                parsedOption <= _mascotOptions.Count)
+            if (parsedOption > 0 && parsedOption <= _mascotOptions.Count)
             {
                 var pokemonChoice = _mascotOptions[parsedOption - 1];
                 isPokemonAdopted = await AdoptPokemon(pokemonChoice);
+            }
+            else if (parsedOption == _mascotOptions.Count + 1)
+            {
+                return;
             }
             else
             {
@@ -91,10 +94,10 @@ public class TamagotchiController
 
     private async Task<bool?> AdoptPokemon(MascotOption pokemonChoice)
     {
-        var pokemon = await _pokemonSerivce.GetPokemon(pokemonChoice.Id);
-        if (pokemon == null)
+        var getPokemonResult = await _pokemonSerivce.GetPokemon(pokemonChoice.Id);
+        if (!getPokemonResult.IsSuccess)
         {
-            TamagotchiView.DisplayGetPokemonErrorMessage();
+            TamagotchiView.DisplayErrorMessage(getPokemonResult.Error!);
             return null;
         }
 
@@ -106,10 +109,10 @@ public class TamagotchiController
             switch (option)
             {
                 case "1":
-                    TamagotchiView.DisplayPokemon(pokemon);
+                    TamagotchiView.DisplayPokemon(getPokemonResult.Value!);
                     break;
                 case "2":
-                    var mascot = _mapper.Map<Mascot>(pokemon);
+                    var mascot = _mapper.Map<Mascot>(getPokemonResult.Value);
                     _mascots.Add(mascot);
                     TamagotchiView.DisplayAdoptionMessage(_user, pokemonChoice);
                     return true;
@@ -134,13 +137,15 @@ public class TamagotchiController
 
             TamagotchiView.DisplayAdoptedMascotMenu(_mascots);
             var option = Console.ReadLine();
+            int.TryParse(option, out var parsedOption);
 
-            if (int.TryParse(option, out var parsedOption) &&
-                    parsedOption > 0 &&
-                    parsedOption <= _mascots.Count)
+            if (parsedOption > 0 && parsedOption <= _mascots.Count)
             {
                 var mascotChoice = _mascots[parsedOption - 1];
                 InteractWithMascot(mascotChoice);
+            }
+            else if (parsedOption == _mascots.Count + 1)
+            {
                 return;
             }
             else
@@ -170,15 +175,15 @@ public class TamagotchiController
                     break;
                 case "2":
                     mascot.Feed();
-                    TamagotchiView.DisplayFeedMessage(mascot);
+                    TamagotchiView.DisplayFeedMessage(_user, mascot);
                     break;
                 case "3":
                     mascot.Play();
-                    TamagotchiView.DisplayPlayMessage(mascot);
+                    TamagotchiView.DisplayPlayMessage(_user, mascot);
                     break;
                 case "4":
                     mascot.Sleep();
-                    TamagotchiView.DisplaySleepMessage(mascot);
+                    TamagotchiView.DisplaySleepMessage(_user, mascot);
                     break;
                 case "5":
                     return;

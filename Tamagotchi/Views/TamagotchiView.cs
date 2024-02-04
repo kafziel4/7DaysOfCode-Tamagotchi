@@ -15,9 +15,9 @@ public static class TamagotchiView
   |   |  |       ||       ||       ||   | __ |  | |  |  |   |  |       ||       ||   | 
   |   |  |       ||       ||       ||   ||  ||  |_|  |  |   |  |      _||       ||   | 
   |   |  |   _   || ||_|| ||   _   ||   |_| ||       |  |   |  |     |_ |   _   ||   | 
-  |___|  |__| |__||_|   |_||__| |__||_______||_______|  |___|  |_______||__| |__||___| 
-";
-        Console.Write(header);
+  |___|  |__| |__||_|   |_||__| |__||_______||_______|  |___|  |_______||__| |__||___| ";
+
+        DisplayWithColor(header, ConsoleColor.Blue);
     }
 
     public static void DisplayUsernameQuestion()
@@ -52,6 +52,8 @@ public static class TamagotchiView
         {
             Console.WriteLine($"{i + 1} - {mascotOptions[i]}");
         }
+
+        Console.WriteLine($"{mascotOptions.Count + 1} - VOLTAR");
     }
 
     public static void DisplayAdoptionMenu(User user, MascotOption mascotOption)
@@ -64,10 +66,10 @@ public static class TamagotchiView
         Console.WriteLine("3 - VOLTAR");
     }
 
-    public static void DisplayGetPokemonErrorMessage()
+    public static void DisplayErrorMessage(string error)
     {
         Console.WriteLine();
-        Console.WriteLine("ERRO AO OBTER DADOS DO POKEMON!");
+        DisplayWithColor(error, ConsoleColor.Red);
     }
 
     public static void DisplayPokemon(Pokemon pokemon)
@@ -98,9 +100,9 @@ public static class TamagotchiView
   ██                    ██  
     ██                ██    
       ████        ████      
-          ████████          
-";
-        Console.Write(egg);
+          ████████          ";
+
+        DisplayWithColor(egg, ConsoleColor.Yellow);
     }
 
     public static void DisplayNoAdoptedMascotMessage(User user)
@@ -118,6 +120,8 @@ public static class TamagotchiView
         {
             Console.WriteLine($"{i + 1} - {mascots[i].Name}");
         }
+
+        Console.WriteLine($"{mascots.Count + 1} - VOLTAR");
     }
 
     public static void DisplayHatchMessage(User user, Mascot mascot)
@@ -144,9 +148,9 @@ public static class TamagotchiView
   ██                    ██  
     ██                ██    
       ████        ████      
-          ████████          
-";
-        Console.Write(hatchedEgg);
+          ████████          ";
+
+        DisplayWithColor(hatchedEgg, ConsoleColor.Yellow);
     }
 
     public static void DisplayInteractionMenu(User user, Mascot mascot)
@@ -167,26 +171,14 @@ public static class TamagotchiView
         Console.WriteLine(mascot);
     }
 
-    public static void DisplayFeedMessage(Mascot mascot)
-    {
-        Console.WriteLine();
-        Console.WriteLine("\\(^O^)/");
-        Console.WriteLine($"{mascot.Name} COMEU!");
-    }
+    public static void DisplayFeedMessage(User user, Mascot mascot) =>
+        DisplayInteractionMessage("\\(^O^)/", $"{user}, VOCÊ ALIMENTOU O {mascot.Name}!");
 
-    public static void DisplayPlayMessage(Mascot mascot)
-    {
-        Console.WriteLine();
-        Console.WriteLine("\\(^-^)/");
-        Console.WriteLine($"{mascot.Name} BRINCOU!");
-    }
+    public static void DisplayPlayMessage(User user, Mascot mascot) =>
+        DisplayInteractionMessage("\\(^-^)/", $"{user}, VOCÊ BRINCOU COM O {mascot.Name}!");
 
-    public static void DisplaySleepMessage(Mascot mascot)
-    {
-        Console.WriteLine();
-        Console.WriteLine("<(^_^)>");
-        Console.WriteLine($"{mascot.Name} DORMIU!");
-    }
+    public static void DisplaySleepMessage(User user, Mascot mascot) =>
+        DisplayInteractionMessage("<(^_^)>", $"{user}, VOCÊ COLOCOU O {mascot.Name} PARA DORMIR!");
 
     public static void DisplayEndOfProgram(User user)
     {
@@ -199,7 +191,21 @@ public static class TamagotchiView
     public static void DisplayInvalidOptionMessage()
     {
         Console.WriteLine();
-        Console.WriteLine("ESCOLHA INVÁLIDA!");
+        DisplayWithColor("OPÇÃO INVÁLIDA, TENTE NOVAMENTE!", ConsoleColor.Red);
+    }
+
+    private static void DisplayWithColor(string text, ConsoleColor color)
+    {
+        Console.ForegroundColor = color;
+        Console.WriteLine(text);
+        Console.ResetColor();
+    }
+
+    private static void DisplayInteractionMessage(string emoticon, string message)
+    {
+        Console.WriteLine();
+        DisplayWithColor(emoticon, ConsoleColor.Green);
+        Console.WriteLine(message);
     }
 
     private static string PadCenter(string text = "", int length = 60)
