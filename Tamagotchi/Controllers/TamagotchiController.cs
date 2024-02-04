@@ -69,8 +69,8 @@ public class TamagotchiController
 
     private async Task ChoosePokemon()
     {
-        bool? isPokemonAdopted = false;
-        while (isPokemonAdopted.HasValue && !isPokemonAdopted.Value)
+        bool isPokemonAdopted = false;
+        while (!isPokemonAdopted)
         {
             TamagotchiView.DisplayChoosePokemonMenu(_user, _mascotOptions);
             var option = Console.ReadLine();
@@ -92,13 +92,13 @@ public class TamagotchiController
         }
     }
 
-    private async Task<bool?> AdoptPokemon(MascotOption pokemonChoice)
+    private async Task<bool> AdoptPokemon(MascotOption pokemonChoice)
     {
         var getPokemonResult = await _pokemonSerivce.GetPokemon(pokemonChoice.Id);
         if (!getPokemonResult.IsSuccess)
         {
             TamagotchiView.DisplayErrorMessage(getPokemonResult.Error!);
-            return null;
+            return false;
         }
 
         while (true)
